@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "skills": {
+    "aerospike": {
+      "source": "aerospike/agent-skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "compiled-skills/aerospike/SKILL.md",
+      "computedHash": "6fdc3126dcf80807daf12b90a5c7783b97b5c5b9e243332fa02d1a7272a19423"
+    }
+  }
+}

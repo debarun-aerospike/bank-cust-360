@@ -1,0 +1,67 @@
+version = 1
+revision = 3
+requires-python = ">=3.10"
+
+[[package]]
+name = "aerospike"
+version = "16.0.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/db/c2/f26012c6d24203daf98043379188fc948bd8df6bd57ade3be7fc2da37f69/aerospike-16.0.2.tar.gz", hash = "sha256:d268f5e257edfb88ec9adf31c426484d27631d07ac20922bffadd8e78495ea85", size = 2191181, upload-time = "2025-03-06T23:51:33.636Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bf/9c/18260bdf9ebb76f6956e74c85d3fe40a58f2c76209b8a304e9ae5f0e96f2/aerospike-16.0.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c90c90065a776480e9d41c8469bc343b6b26cb08109b5aa9843cf24f110157fc", size = 2594675, upload-time = "2025-03-06T23:50:57.435Z" },
+    { url = "https://files.pythonhosted.org/packages/1f/79/58a9e18308007e0f8f0a2fa36f0c1053c73c3ca6174cb4af0c4ea9a909dd/aerospike-16.0.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:80e028a8c84b36359eeb879941e3b0218b2c2b7ee889e1c7ea3098acffa91d13", size = 2880320, upload-time = "2025-03-06T23:50:59.513Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/84/3a8c7baf9ae0b84e39661e70395d63639900fda13c4f6d2e7c3527bb9567/aerospike-16.0.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f452048cb4e805a925fadb0390250beead2023dbbecf98288ff2cc617f99d13a", size = 5611862, upload-time = "2025-03-06T23:51:01.246Z" },
+    { url = "https://files.pythonhosted.org/packages/fa/40/6a6e4572fbceb7c13c2468fa7818d57d049c42bcdc67a6d6b101b67bb1fa/aerospike-16.0.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:235e99930d8ea78c9d91cc2b8d0c38729d7e2c54dbeb77fe1cabcfb9e12fa2e8", size = 5726046, upload-time = "2025-03-06T23:51:02.439Z" },
+    { url = "https://files.pythonhosted.org/packages/24/a7/2de507a93ec4d135e4733e511c726df733f26034f07b0b13c4db5acc3722/aerospike-16.0.2-cp310-cp310-win_amd64.whl", hash = "sha256:e32440715bda945daef8809bfd490f4b254ed884cadc930b3ede549b4ca21653", size = 1804437, upload-time = "2025-03-06T23:51:03.943Z" },
+    { url = "https://files.pythonhosted.org/packages/6d/fe/7c09f430e00b72979658ac7329a0cc0e2c7df9689133301ddabaf3a60b1a/aerospike-16.0.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:18a487eec177372dea02420338903000d735b526bff5643146b05c6e98bb87c8", size = 2594710, upload-time = "2025-03-06T23:51:05.146Z" },
+    { url = "https://files.pythonhosted.org/packages/d8/ab/aa895a1e99d1107ffac7c34c5c044ab08e7fd554d12c04010765ecdbe0b4/aerospike-16.0.2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:0b7bb1db6ced710d167b72c2e9df5203fc5c9160336279891b2aebd7115df046", size = 2880278, upload-time = "2025-03-06T23:51:06.51Z" },
+    { url = "https://files.pythonhosted.org/packages/0a/39/69c02dcb57087b86d64f091859338eaca3371056e82bbde2ce147a49b6eb/aerospike-16.0.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1900ddc7c030e7f631c973da7f98bf858bf0c04cf89e9a11a44fec683d5bb06e", size = 5641017, upload-time = "2025-03-06T23:51:07.625Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/34/f01a85b218430effac7f37c2274a98160de1f0ba181eb3673115a1482bec/aerospike-16.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d53a2de0198444f8ec7be259f2b0dc93f1e923e31db5312d884101fc1d07849a", size = 5758892, upload-time = "2025-03-06T23:51:09.216Z" },
+    { url = "https://files.pythonhosted.org/packages/71/16/b155d6ea475b2426be032e19bff90ff79e34eda15b9735feab95a6792b8b/aerospike-16.0.2-cp311-cp311-win_amd64.whl", hash = "sha256:3efe2f303631545a7ce1a5226d95f431addfe8c1f3da39fe085947baaeb6ca31", size = 1804364, upload-time = "2025-03-06T23:51:10.521Z" },
+    { url = "https://files.pythonhosted.org/packages/3c/c4/861bb56f74b510845de3d1979a4f551243717b45b55c8b70c77906a7fbf1/aerospike-16.0.2-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:d569e64c935ad8ffa8f97330cd28c76f8ecacfe5e1384c62a2d5644ef3ddc519", size = 2595489, upload-time = "2025-03-06T23:51:12.224Z" },
+    { url = "https://files.pythonhosted.org/packages/c3/5d/325911dd8a13a801e74e4d702c20bd7d25666e9da6ac1d01a83e0a6222a9/aerospike-16.0.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:b2d2dc18b1309a9da464b58ef6d5d0317da15ac9f12fcdf0e0d583815ebdf9a6", size = 2880846, upload-time = "2025-03-06T23:51:13.507Z" },
+    { url = "https://files.pythonhosted.org/packages/68/80/080af7c73b0a9e86dba6295ef1fe7242012956c2a0c42b66c492d59d1b1b/aerospike-16.0.2-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1a97403a7d146486075a742ea57221e7ab6ae070a2ccf32efd360ad08594f965", size = 5667523, upload-time = "2025-03-06T23:51:14.728Z" },
+    { url = "https://files.pythonhosted.org/packages/b2/9c/94a3efeccc69b57d3aa2fee3320d8a1fa52c541b3c18fa957868ebb17a42/aerospike-16.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:40e674a2fc9d8116c92272b3c55e9e850ce55176f0eeb08ddb6d462e523635a0", size = 5783816, upload-time = "2025-03-06T23:51:16.474Z" },
+    { url = "https://files.pythonhosted.org/packages/79/57/94322a599ea6fca86bf334196f0515f57738d0350202d1acb6906958f8cf/aerospike-16.0.2-cp312-cp312-win_amd64.whl", hash = "sha256:63308d7854c54129d7e68b3621b8af4163b473f1398c773830ac3aa2cfa9be10", size = 1804971, upload-time = "2025-03-06T23:51:18.314Z" },
+    { url = "https://files.pythonhosted.org/packages/d4/74/3061439f9fd01e004848150efa5c1972e9fef47686ce27667e334d5cbcef/aerospike-16.0.2-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:2f0f9ee696d1fd7d2ae1566ac86d05369d14ca848303a5efa46e47a0db38b196", size = 2595542, upload-time = "2025-03-06T23:51:19.836Z" },
+    { url = "https://files.pythonhosted.org/packages/23/26/ee25003a8c8a8a282f537feee1f0e1682505275398bc18a8ff6bdb537cc5/aerospike-16.0.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:1765434140d5394cdd169f9d475a17bd497951478ad735ab01bcee9f28f22bbc", size = 2880878, upload-time = "2025-03-06T23:51:20.922Z" },
+    { url = "https://files.pythonhosted.org/packages/98/4e/55934474b6a92878c82d21699e1b1fb2234822a3aa004c27bb76b6b5208e/aerospike-16.0.2-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b1762c3731b8845ff247197102d17eb7633d45b0b34a4aa0a95fdf7404b30f7c", size = 5676634, upload-time = "2025-03-06T23:51:22.095Z" },
+    { url = "https://files.pythonhosted.org/packages/45/90/78c38f8f15b0b6b9bde303b6c26fa98cb8a617f33c51fcc9f34446521220/aerospike-16.0.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:adbad77746167b68a14bec7ef9c173856008314d550fd6c2bd1ea9ec29e7ee5d", size = 5793379, upload-time = "2025-03-06T23:51:23.753Z" },
+    { url = "https://files.pythonhosted.org/packages/0a/e8/0a86a8c1b6b12374465743eaebb99f4cf42e008bb4a7db663d3d33efd766/aerospike-16.0.2-cp313-cp313-win_amd64.whl", hash = "sha256:882f9994d0b703956911e16b2baf1c29c547680925631f9ed6533ccea394408f", size = 1804953, upload-time = "2025-03-06T23:51:25.393Z" },
+]
+
+[[package]]
+name = "customer-360-seed"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "aerospike" },
+    { name = "faker" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aerospike", specifier = ">=15.0.0,<17" },
+    { name = "faker", specifier = ">=30.0.0" },
+]
+
+[[package]]
+name = "faker"
+version = "40.40.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/43/43/7f5870d05331cb1649704040f51332d37f2468ed857de1e226482e2948b0/faker-40.40.0.tar.gz", hash = "sha256:803ee7f920679e7367c3f7b7f97752f5a9780aa5566c71723fbe57d591beafe1", size = 2029985, upload-time = "2026-09-29T00:56:19.983Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e1/d2/58beb2b8355f89b483fa21b99fe9934ee7312e3ccf228bb7cefe9e8d979c/faker-40.40.0-py3-none-any.whl", hash = "sha256:cd45ebdd1363f92a45740ac49945e49fa18f7e10771884a83c796a235550d7b7", size = 2066663, upload-time = "2026-09-29T00:56:17.952Z" },
+]
+
+[[package]]
+name = "tzdata"
+version = "2026.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e4/31/3d74fa778a63b98b7374323befcc0be5ab3bd94afd4096a0124e7379152c/tzdata-2026.4.tar.gz", hash = "sha256:f1b8bd365d8d210c55353f4d7f8d6d8561c0ba50d704b700d195a9424bba0d79", size = 199350, upload-time = "2026-09-12T12:56:03.251Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f9/bc/8737e8d54cf51106118039b83f485a4783112fab49ea9d044b234978a46e/tzdata-2026.4-py2.py3-none-any.whl", hash = "sha256:c2169a8b0a7a5e9674da5a135ccdfb2b3e671b333ed9fed17b41f73c34476e81", size = 347494, upload-time = "2026-09-12T12:56:01.67Z" },
+]

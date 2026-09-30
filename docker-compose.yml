@@ -1,0 +1,88 @@
+# Customer 360 full stack — Aerospike + seed + API + UI
+# From repo root: docker compose up --build -d
+#
+# UI:     http://127.0.0.1:3001
+# API:    http://127.0.0.1:18000/docs  (host 18000 → container 8000; avoids Portainer on 8000)
+# AS:     127.0.0.1:13000  (namespace bank)
+
+services:
+  aerospike:
+    image: aerospike/aerospike-server-enterprise:latest
+    container_name: bank-c360-aerospike
+    ports:
+      # Host ports offset to avoid clashing with another local Aerospike on 3000.
+      - "13000:3000"
+      - "13001:3001"
+      - "13002:3002"
+      - "13003:3003"
+    volumes:
+      - ./ops/docker/aerospike.conf:/opt/aerospike/etc/aerospike.conf:ro
+    command: ["--config-file", "/opt/aerospike/etc/aerospike.conf"]
+    healthcheck:
+      test: ["CMD", "asinfo", "-v", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+
+  seed:
+    build:
+      context: ./ops/seed
+    container_name: bank-c360-seed
+    depends_on:
+      aerospike:
+        condition: service_healthy
+    environment:
+      SEED_CUSTOMERS: ${SEED_CUSTOMERS:-100}
+      SEED_COUNTRY: ${SEED_COUNTRY:-India}
+    entrypoint: ["uv", "run", "--no-sync", "python", "seed.py"]
+    command:
+      - --host=aerospike
+      - --port=3000
+      - --customers=${SEED_CUSTOMERS:-100}
+      - --country=${SEED_COUNTRY:-India}
+      - --checkpoint-every=${SEED_CHECKPOINT_EVERY:-1000}
+    restart: "no"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: bank-c360-backend
+    depends_on:
+      aerospike:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    ports:
+      - "18000:8000"
+    environment:
+      AEROSPIKE_HOST: aerospike
+      AEROSPIKE_PORT: "3000"
+      AEROSPIKE_NAMESPACE: bank
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-admin:admin}
+      SEEDED_CUSTOMER_MAX: ${SEED_CUSTOMERS:-100}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-http://127.0.0.1:18000}
+        NEXT_PUBLIC_ADMIN_TOKEN: ${ADMIN_TOKEN:-admin:admin}
+    container_name: bank-c360-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3001:3001"

@@ -1,0 +1,12 @@
+[project]
+name = "customer-360-seed"
+version = "0.1.0"
+description = "Gate 3 Aerospike seed and verify for Customer 360"
+requires-python = ">=3.10"
+dependencies = [
+    "aerospike>=15.0.0,<17",
+    "faker>=30.0.0",
+]
+
+[tool.uv]
+package = false

@@ -1,0 +1,24 @@
+# Aerospike-only lab (legacy entrypoint).
+# Prefer the full stack from the repo root:
+#   docker compose up --build -d
+#
+# This file remains for Gate-3 / DB-only bring-up.
+
+services:
+  aerospike:
+    image: aerospike/aerospike-server-enterprise:latest
+    container_name: bank-c360-aerospike
+    ports:
+      - "13000:3000"
+      - "13001:3001"
+      - "13002:3002"
+      - "13003:3003"
+    volumes:
+      - ./aerospike.conf:/opt/aerospike/etc/aerospike.conf:ro
+    command: ["--config-file", "/opt/aerospike/etc/aerospike.conf"]
+    healthcheck:
+      test: ["CMD", "asinfo", "-v", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
