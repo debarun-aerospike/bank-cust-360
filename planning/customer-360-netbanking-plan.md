@@ -3,7 +3,7 @@
 **Status:** Gates 0–5 in place — Next.js UI at `frontend/`  
 **Date:** 2026-09-30  
 
-**Frontend:** `frontend/README.md` — http://127.0.0.1:3001 (API http://127.0.0.1:8000)
+**Frontend:** `frontend/README.md` — http://127.0.0.1:4000 (API http://127.0.0.1:8000)
 
 ---
 

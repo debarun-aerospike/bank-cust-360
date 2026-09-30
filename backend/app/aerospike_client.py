@@ -26,9 +26,16 @@ def connect() -> Any:
     if _client is not None:
         return _client
     settings = get_settings()
-    hosts = [(settings.aerospike_host, settings.aerospike_port)]
-    logger.info("Connecting Aerospike hosts=%s ns=%s", hosts, settings.aerospike_namespace)
-    _client = aerospike.client({"hosts": hosts})
+    config = settings.aerospike_client_config()
+    hosts = config["hosts"]
+    auth = "on" if config.get("user") else "off"
+    logger.info(
+        "Connecting Aerospike hosts=%s ns=%s auth=%s",
+        hosts,
+        settings.aerospike_namespace,
+        auth,
+    )
+    _client = aerospike.client(config)
     return _client
 
 

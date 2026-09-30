@@ -12,6 +12,7 @@ Does not increment inventory per record (avoids hot key); checkpoints `inventory
 from __future__ import annotations
 
 import argparse
+import os
 import random
 import sys
 import time
@@ -22,7 +23,9 @@ from aerospike import exception as ae
 from faker import Faker
 
 NS = "bank"
-HOST = ("127.0.0.1", 3000)
+HOSTS: list[tuple[str, int]] = [("127.0.0.1", 3000)]
+USER: str | None = None
+PASSWORD: str | None = None
 
 PRODUCTS: list[dict[str, Any]] = [
     {"code": "SB-REG", "description": "Regular Savings Account", "productLine": "SAVINGS_CURRENT"},
@@ -161,9 +164,29 @@ def prompt_country(cli_value: str | None) -> str:
     return "India"
 
 
+def parse_hosts(hosts_csv: str, default_port: int) -> list[tuple[str, int]]:
+    out: list[tuple[str, int]] = []
+    for part in (hosts_csv or "").split(","):
+        item = part.strip()
+        if not item:
+            continue
+        if ":" in item:
+            host, _, port_s = item.rpartition(":")
+            host = host.strip()
+            if not host:
+                continue
+            out.append((host, int(port_s.strip())))
+        else:
+            out.append((item, default_port))
+    return out
+
+
 def connect() -> Any:
-    client = aerospike.client({"hosts": [HOST]})
-    return client
+    config: dict[str, Any] = {"hosts": HOSTS}
+    if USER:
+        config["user"] = USER
+        config["password"] = PASSWORD or ""
+    return aerospike.client(config)
 
 
 def write_policy() -> Any:
@@ -339,8 +362,16 @@ def seed_customer(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Seed Customer 360 Aerospike data")
     parser.add_argument("--customers", type=int, default=100, help="Number of customers to load")
-    parser.add_argument("--host", default="127.0.0.1")
-    parser.add_argument("--port", type=int, default=3000)
+    parser.add_argument(
+        "--hosts",
+        default=None,
+        help="Comma-separated seed nodes host[:port] (overrides --host/--port; "
+        "also reads AEROSPIKE_HOSTS)",
+    )
+    parser.add_argument("--host", default=None, help="Single seed host (default 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=None, help="Default port when omitted on a host")
+    parser.add_argument("--user", default=None, help="Aerospike user (or AEROSPIKE_USER)")
+    parser.add_argument("--password", default=None, help="Aerospike password (or AEROSPIKE_PASSWORD)")
     parser.add_argument("--checkpoint-every", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
@@ -361,12 +392,22 @@ def main() -> int:
     Faker.seed(args.seed)
     fake.seed_instance(args.seed)
 
-    global HOST
-    HOST = (args.host, args.port)
+    default_port = args.port if args.port is not None else int(os.environ.get("AEROSPIKE_PORT") or "3000")
+    hosts_csv = args.hosts or os.environ.get("AEROSPIKE_HOSTS") or ""
+    single_host = args.host or os.environ.get("AEROSPIKE_HOST") or "127.0.0.1"
+
+    global HOSTS, USER, PASSWORD
+    if hosts_csv.strip():
+        HOSTS = parse_hosts(hosts_csv, default_port)
+    else:
+        HOSTS = [(single_host.strip() or "127.0.0.1", default_port)]
+    USER = (args.user if args.user is not None else os.environ.get("AEROSPIKE_USER") or "").strip() or None
+    PASSWORD = args.password if args.password is not None else os.environ.get("AEROSPIKE_PASSWORD")
 
     print(
-        f"Connecting to Aerospike {HOST} namespace={NS} "
-        f"names={country_label} (locale={locale}) currency={currency} ..."
+        f"Connecting to Aerospike {HOSTS} namespace={NS} "
+        f"names={country_label} (locale={locale}) currency={currency} "
+        f"auth={'on' if USER else 'off'} ..."
     )
     try:
         client = connect()

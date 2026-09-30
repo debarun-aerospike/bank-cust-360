@@ -23,12 +23,39 @@ docker compose ps
 
 | Service   | URL / address                          |
 |-----------|----------------------------------------|
-| UI        | http://127.0.0.1:3001                  |
+| UI        | http://127.0.0.1:4000                  |
 | API docs  | http://127.0.0.1:18000/docs            |
 | Aerospike | `127.0.0.1:13000` (namespace **`bank`**) |
 
 Demo login Customer ID after default seed: `0000001` (Bearer `mock:0000001`).  
 Admin token: `admin:admin` (override with `ADMIN_TOKEN`).
+
+### External Aerospike instead of the Compose DB
+
+1. In `.env`, set seeds / optional auth:
+
+```bash
+AEROSPIKE_HOSTS=10.0.0.11:3000,10.0.0.12:3000
+AEROSPIKE_NAMESPACE=bank
+AEROSPIKE_USER=          # optional
+AEROSPIKE_PASSWORD=      # optional
+# AEROSPIKE_CONFIG_FILE=./ops/aerospike.client.env
+```
+
+2. Start app only:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.external.yml up --build -d
+```
+
+3. Seed:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.external.yml run --rm --no-deps seed \
+  --hosts="$AEROSPIKE_HOSTS" --customers=100 --country=India
+```
+
+See root `README.md` and `ops/aerospike.client.env.example`.
 
 Seed size / country via `.env`:
 
@@ -37,7 +64,7 @@ SEED_CUSTOMERS=100
 SEED_COUNTRY=India
 ```
 
-Namespace storage is in-memory — recreating the Aerospike container loses data. Reseed with:
+Namespace storage (bundled lab) is in-memory — recreating the Aerospike container loses data. Reseed with:
 
 ```bash
 docker compose run --rm seed

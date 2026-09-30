@@ -1,9 +1,12 @@
 # Customer 360 full stack — Aerospike + seed + API + UI
-# From repo root: docker compose up --build -d
+# From repo root:
+#   Local Aerospike (default):  docker compose up --build -d
+#   External Aerospike:         docker compose -f docker-compose.yml -f docker-compose.external.yml up --build -d
+#                               (set AEROSPIKE_HOSTS / auth in .env first)
 #
-# UI:     http://127.0.0.1:3001
-# API:    http://127.0.0.1:18000/docs  (host 18000 → container 8000; avoids Portainer on 8000)
-# AS:     127.0.0.1:13000  (namespace bank)
+# UI:     http://127.0.0.1:4000
+# API:    http://127.0.0.1:18000/docs
+# AS:     127.0.0.1:13000 when using the bundled lab DB
 
 services:
   aerospike:
@@ -35,10 +38,12 @@ services:
     environment:
       SEED_CUSTOMERS: ${SEED_CUSTOMERS:-100}
       SEED_COUNTRY: ${SEED_COUNTRY:-India}
+      AEROSPIKE_HOSTS: ${AEROSPIKE_HOSTS:-aerospike:3000}
+      AEROSPIKE_USER: ${AEROSPIKE_USER:-}
+      AEROSPIKE_PASSWORD: ${AEROSPIKE_PASSWORD:-}
     entrypoint: ["uv", "run", "--no-sync", "python", "seed.py"]
     command:
-      - --host=aerospike
-      - --port=3000
+      - --hosts=${AEROSPIKE_HOSTS:-aerospike:3000}
       - --customers=${SEED_CUSTOMERS:-100}
       - --country=${SEED_COUNTRY:-India}
       - --checkpoint-every=${SEED_CHECKPOINT_EVERY:-1000}
@@ -52,14 +57,21 @@ services:
     depends_on:
       aerospike:
         condition: service_healthy
+        required: false
       seed:
         condition: service_completed_successfully
+        required: false
     ports:
       - "18000:8000"
     environment:
-      AEROSPIKE_HOST: aerospike
-      AEROSPIKE_PORT: "3000"
-      AEROSPIKE_NAMESPACE: bank
+      # Local compose default: in-network service name. Override for an external cluster.
+      AEROSPIKE_HOSTS: ${AEROSPIKE_HOSTS:-aerospike:3000}
+      AEROSPIKE_HOST: ${AEROSPIKE_HOST:-aerospike}
+      AEROSPIKE_PORT: ${AEROSPIKE_PORT:-3000}
+      AEROSPIKE_NAMESPACE: ${AEROSPIKE_NAMESPACE:-bank}
+      AEROSPIKE_USER: ${AEROSPIKE_USER:-}
+      AEROSPIKE_PASSWORD: ${AEROSPIKE_PASSWORD:-}
+      AEROSPIKE_CONFIG_FILE: ${AEROSPIKE_CONFIG_FILE:-}
       ADMIN_TOKEN: ${ADMIN_TOKEN:-admin:admin}
       SEEDED_CUSTOMER_MAX: ${SEED_CUSTOMERS:-100}
       SEED_DIR: /app/ops/seed
@@ -87,4 +99,4 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - "3001:3001"
+      - "4000:4000"

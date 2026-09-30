@@ -1,4 +1,7 @@
 .env
+.env.*
+!.env.example
+ops/aerospike.client.env
 .DS_Store
 *.pyc
 __pycache__/

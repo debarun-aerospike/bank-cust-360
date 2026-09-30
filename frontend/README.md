@@ -8,7 +8,7 @@ For the full stack in Docker (Aerospike + seed + API + UI), from the repo root:
 docker compose up --build -d
 ```
 
-Open http://127.0.0.1:3001 — see `ops/README.md`.
+Open http://127.0.0.1:4000 — see `ops/README.md`.
 
 ## Setup
 
@@ -25,7 +25,7 @@ Backend must be on `http://127.0.0.1:8000` (see `backend/README.md`).
 npm run dev
 ```
 
-Open http://127.0.0.1:3001
+Open http://127.0.0.1:4000
 
 - **/login** — mock Customer ID (e.g. `0000001`)
 - **/c360** — accounts home with product-line tabs

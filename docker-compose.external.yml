@@ -1,0 +1,27 @@
+# Use with an Aerospike cluster that is NOT the Compose lab container:
+#   docker compose -f docker-compose.yml -f docker-compose.external.yml up --build -d
+#
+# Requires AEROSPIKE_HOSTS in .env (or the environment). Optional:
+#   AEROSPIKE_USER / AEROSPIKE_PASSWORD / AEROSPIKE_NAMESPACE / AEROSPIKE_CONFIG_FILE
+#
+# Seed separately:
+#   docker compose -f docker-compose.yml -f docker-compose.external.yml run --rm --no-deps seed \
+#     --hosts="$AEROSPIKE_HOSTS" --customers=100 --country=India
+
+services:
+  aerospike:
+    profiles: ["bundled-aerospike-disabled"]
+
+  seed:
+    profiles: ["bundled-aerospike-disabled"]
+
+  backend:
+    environment:
+      # Fail fast if seeds were not configured for external mode.
+      AEROSPIKE_HOSTS: ${AEROSPIKE_HOSTS:?Set AEROSPIKE_HOSTS to your external seed nodes, e.g. 10.0.0.11:3000,10.0.0.12:3000}
+      AEROSPIKE_HOST: ${AEROSPIKE_HOST:-}
+      AEROSPIKE_PORT: ${AEROSPIKE_PORT:-3000}
+      AEROSPIKE_NAMESPACE: ${AEROSPIKE_NAMESPACE:-bank}
+      AEROSPIKE_USER: ${AEROSPIKE_USER:-}
+      AEROSPIKE_PASSWORD: ${AEROSPIKE_PASSWORD:-}
+      AEROSPIKE_CONFIG_FILE: ${AEROSPIKE_CONFIG_FILE:-}

@@ -22,13 +22,16 @@ cd backend
 uv sync --group dev
 ```
 
-Environment (optional `.env`):
+Environment (optional `.env`, or `AEROSPIKE_CONFIG_FILE`):
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `AEROSPIKE_HOST` | `127.0.0.1` | |
-| `AEROSPIKE_PORT` | `13000` | Host-mapped client port |
+| `AEROSPIKE_HOSTS` | _(empty)_ | Comma-separated seeds `host` or `host:port` (preferred) |
+| `AEROSPIKE_HOST` | `127.0.0.1` | Single seed when `AEROSPIKE_HOSTS` is empty |
+| `AEROSPIKE_PORT` | `13000` | Default port for hosts without an explicit port |
 | `AEROSPIKE_NAMESPACE` | `bank` | |
+| `AEROSPIKE_USER` | _(empty)_ | Optional DB user |
+| `AEROSPIKE_PASSWORD` | _(empty)_ | Optional DB password |
 | `ADMIN_TOKEN` | `admin:admin` | Bearer token for Admin APIs |
 | `SEEDED_CUSTOMER_MAX` | `100` | Loadgen ID range (updated after ingest) |
 

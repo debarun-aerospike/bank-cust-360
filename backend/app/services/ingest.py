@@ -90,13 +90,15 @@ class IngestJob:
             str(target),
             "--checkpoint-every",
             str(checkpoint_every),
-            "--host",
-            settings.aerospike_host,
-            "--port",
-            str(settings.aerospike_port),
             "--country",
             country,
         ]
+        hosts = settings.aerospike_host_list()
+        hosts_csv = ",".join(f"{h}:{p}" for h, p in hosts)
+        cmd.extend(["--hosts", hosts_csv])
+        if settings.aerospike_user:
+            cmd.extend(["--user", settings.aerospike_user])
+            cmd.extend(["--password", settings.aerospike_password or ""])
         try:
             proc = subprocess.run(
                 cmd,
