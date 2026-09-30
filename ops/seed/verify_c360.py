@@ -23,7 +23,10 @@ def balance_paise(product_line: str, bins: dict[str, Any] | None) -> int:
     if product_line in ("SAVINGS_CURRENT", "TERM_DEPOSIT"):
         if any(k not in bins for k in ("ledger", "hold", "float")):
             return 0
-        return int(bins["ledger"]) - int(bins["hold"]) - int(bins["float"])
+        available = int(bins["ledger"]) - int(bins["hold"]) - int(bins["float"])
+        if product_line == "SAVINGS_CURRENT":
+            return max(0, available)
+        return available
     if product_line in ("LOAN", "CARD"):
         if any(k not in bins for k in ("principal", "interest")):
             return 0

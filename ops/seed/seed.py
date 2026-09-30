@@ -73,6 +73,42 @@ COUNTRY_LOCALES: dict[str, str] = {
     "united arab emirates": "ar_AA",
 }
 
+# Country / alias → ISO 4217 currency for seeded accounts.
+COUNTRY_CURRENCIES: dict[str, str] = {
+    "india": "INR",
+    "in": "INR",
+    "united states": "USD",
+    "usa": "USD",
+    "us": "USD",
+    "united kingdom": "GBP",
+    "uk": "GBP",
+    "gb": "GBP",
+    "australia": "AUD",
+    "au": "AUD",
+    "canada": "CAD",
+    "ca": "CAD",
+    "germany": "EUR",
+    "de": "EUR",
+    "france": "EUR",
+    "fr": "EUR",
+    "japan": "JPY",
+    "jp": "JPY",
+    "brazil": "BRL",
+    "br": "BRL",
+    "spain": "EUR",
+    "es": "EUR",
+    "mexico": "MXN",
+    "mx": "MXN",
+    "italy": "EUR",
+    "it": "EUR",
+    "netherlands": "EUR",
+    "nl": "EUR",
+    "singapore": "SGD",
+    "sg": "SGD",
+    "uae": "AED",
+    "united arab emirates": "AED",
+}
+
 # Weighted product-line picks for ~avg 2 accounts/customer (max 5).
 LINE_SPECS = [
     ("S", "SAVINGS_CURRENT", ["SB-REG", "CA-PREM"]),
@@ -92,6 +128,28 @@ def resolve_locale(country: str) -> tuple[str, str]:
     if "_" in key and len(key) <= 8:
         return raw, raw
     return raw.title(), "en_US"
+
+
+def resolve_currency(country: str) -> str:
+    """ISO 4217 currency for the ingest country. Default INR."""
+    key = (country or "India").strip().lower() or "india"
+    if key in COUNTRY_CURRENCIES:
+        return COUNTRY_CURRENCIES[key]
+    return "INR"
+
+
+def deposit_booking_amounts(rng: random.Random) -> tuple[int, int, int]:
+    """ledger/hold/float in minor units; available (ledger-hold-float) always ≥ 0."""
+    ledger = rng.randint(10_000_00, 500_000_00)
+    hold_cap = min(5_000_00, ledger // 10)
+    hold = rng.randint(0, hold_cap)
+    remaining = ledger - hold
+    float_cap = min(2_000_00, remaining // 20) if remaining > 0 else 0
+    flo = rng.randint(0, float_cap) if float_cap > 0 else 0
+    # Defensive: never let holds exceed ledger.
+    if hold + flo > ledger:
+        flo = max(0, ledger - hold)
+    return ledger, hold, flo
 
 
 def prompt_country(cli_value: str | None) -> str:
@@ -181,6 +239,7 @@ def seed_customer(
     rng: random.Random,
     counts: dict[str, int],
     fake: Faker,
+    currency: str,
 ) -> None:
     wp = write_policy()
     meta = {"ttl": aerospike.TTL_NEVER_EXPIRE}
@@ -230,7 +289,7 @@ def seed_customer(
             (NS, "accounts", aid),
             {
                 "productLine": product_line,
-                "currency": "INR",
+                "currency": currency,
                 "acctStatus": cust_status,
                 "productCode": code,
                 "productDesc": prod["description"],
@@ -243,9 +302,7 @@ def seed_customer(
         )
 
         if prefix in ("S", "F"):
-            ledger = rng.randint(10_000_00, 500_000_00)  # paise
-            hold = rng.randint(0, min(5_000_00, ledger // 10))
-            flo = rng.randint(0, min(2_000_00, ledger // 20))
+            ledger, hold, flo = deposit_booking_amounts(rng)
             client.put(
                 (NS, "booking", aid),
                 {"ledger": ledger, "hold": hold, "float": flo},
@@ -299,6 +356,7 @@ def main() -> int:
 
     country_input = prompt_country(args.country)
     country_label, locale = resolve_locale(country_input)
+    currency = resolve_currency(country_input)
     fake = Faker(locale)
     Faker.seed(args.seed)
     fake.seed_instance(args.seed)
@@ -308,7 +366,7 @@ def main() -> int:
 
     print(
         f"Connecting to Aerospike {HOST} namespace={NS} "
-        f"names={country_label} (locale={locale}) ..."
+        f"names={country_label} (locale={locale}) currency={currency} ..."
     )
     try:
         client = connect()
@@ -333,7 +391,7 @@ def main() -> int:
         acct_seq = [0]
         t0 = time.time()
         for i in range(1, args.customers + 1):
-            seed_customer(client, cust_id(i), acct_seq, rng, counts, fake)
+            seed_customer(client, cust_id(i), acct_seq, rng, counts, fake, currency)
             if i % args.checkpoint_every == 0:
                 write_inventory(client, counts)
                 elapsed = time.time() - t0
@@ -344,7 +402,7 @@ def main() -> int:
         elapsed = time.time() - t0
         print(
             f"Done. customers={counts['custCnt']} accounts={counts['acctCnt']} "
-            f"names={country_label} in {elapsed:.1f}s. "
+            f"names={country_label} currency={currency} in {elapsed:.1f}s. "
             f"Demo IDs: 0000001 .. {cust_id(args.customers)}"
         )
         return 0

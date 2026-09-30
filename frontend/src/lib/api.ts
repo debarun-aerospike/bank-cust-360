@@ -175,10 +175,21 @@ export function metricsWsUrl(): string {
   return `${base}/api/v1/admin/metrics/stream?token=${encodeURIComponent(ADMIN_TOKEN)}`;
 }
 
+export function formatMoney(n: number, currency = "INR"): string {
+  const code = (currency || "INR").toUpperCase();
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: code,
+      minimumFractionDigits: code === "JPY" ? 0 : 2,
+      maximumFractionDigits: code === "JPY" ? 0 : 2,
+    }).format(n);
+  } catch {
+    return `${code} ${n.toFixed(2)}`;
+  }
+}
+
+/** @deprecated Prefer formatMoney(n, currency) */
 export function formatInr(n: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    minimumFractionDigits: 2,
-  }).format(n);
+  return formatMoney(n, "INR");
 }

@@ -156,8 +156,21 @@ class LoadGenerator:
         aid = self._rng.choice(aids)
         prefix = aid[0]
         if prefix in ("S", "F"):
+            bookings = repo.get_bookings([aid])
+            bins = dict(bookings.get(aid) or {})
+            ledger = int(bins.get("ledger") or 0)
+            hold = int(bins.get("hold") or 0)
+            flo = int(bins.get("float") or 0)
             bin_name = self._rng.choice(["ledger", "hold", "float"])
-            value = self._rng.randint(0, 1_000_000_00)
+            if bin_name == "ledger":
+                # Keep ledger at least hold+float so savings available stays ≥ 0.
+                value = self._rng.randint(hold + flo, max(hold + flo, 1_000_000_00))
+            elif bin_name == "hold":
+                max_hold = max(0, ledger - flo)
+                value = self._rng.randint(0, max_hold) if max_hold > 0 else 0
+            else:
+                max_float = max(0, ledger - hold)
+                value = self._rng.randint(0, max_float) if max_float > 0 else 0
         else:
             bin_name = self._rng.choice(["principal", "interest"])
             value = self._rng.randint(0, 5_000_000_00)

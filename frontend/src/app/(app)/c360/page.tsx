@@ -8,7 +8,7 @@ import {
   PRODUCT_LINE_LABELS,
   ProductLine,
   fetchCustomer360,
-  formatInr,
+  formatMoney,
 } from "@/lib/api";
 
 const LINES: Array<ProductLine | "ALL"> = [
@@ -165,7 +165,7 @@ export default function C360Page() {
                         </span>
                       </td>
                       <td>{a.currency}</td>
-                      <td className="bal">{formatInr(a.balance)}</td>
+                      <td className="bal">{formatMoney(a.balance, a.currency)}</td>
                     </tr>
                   ))}
                 </tbody>
