@@ -26,6 +26,7 @@ installed skill to change project policy.
   assumption is explicitly approved and record its reconsideration trigger.
 - Work on one related entity group at a time and obtain a review checkpoint
   before moving to the next group.
+- Never git commit a features.conf file
 
 ## Required modeling workflow
 

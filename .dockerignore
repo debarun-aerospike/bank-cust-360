@@ -1,0 +1,16 @@
+# Used when building backend with context = repo root
+.git/
+.agents/
+.venv/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/node_modules/
+**/.next/
+frontend/
+docs/
+planning/
+*.md
+.env
+.env.*
+!.env.example

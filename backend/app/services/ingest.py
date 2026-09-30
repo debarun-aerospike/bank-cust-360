@@ -1,19 +1,36 @@
-"""Admin ingestion simulation — runs ops/seed/seed.py via uv."""
+"""Admin ingestion simulation — runs ops/seed/seed.py in a subprocess."""
 
 from __future__ import annotations
 
+import os
 import subprocess
+import sys
 import threading
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from app.config import get_settings
 
-ROOT = Path(__file__).resolve().parents[3]
-SEED_DIR = ROOT / "ops" / "seed"
-
 # Updated when ingest completes successfully; loadgen prefers this over settings default.
 effective_customer_max: int | None = None
+
+
+def resolve_seed_dir() -> Path:
+    """Locate seed.py for monorepo (dev) or bundled Docker layout."""
+    env = (os.environ.get("SEED_DIR") or "").strip()
+    if env:
+        return Path(env)
+
+    here = Path(__file__).resolve()
+    # .../customer360/backend/app/services/ingest.py → .../customer360/ops/seed
+    mono = here.parents[3] / "ops" / "seed"
+    if (mono / "seed.py").is_file():
+        return mono
+    # Container: /app/app/services/ingest.py → /app/ops/seed
+    bundled = here.parents[2] / "ops" / "seed"
+    if (bundled / "seed.py").is_file():
+        return bundled
+    return mono
 
 
 @dataclass
@@ -55,11 +72,20 @@ class IngestJob:
     def _run(self, target: int, checkpoint_every: int, country: str) -> None:
         global effective_customer_max
         settings = get_settings()
+        seed_dir = resolve_seed_dir()
+        seed_py = seed_dir / "seed.py"
+        if not seed_py.is_file():
+            self.state = "failed"
+            self.message = (
+                f"seed script not found at {seed_py} "
+                "(set SEED_DIR or bundle ops/seed into the backend image)"
+            )
+            self.last_exit_code = -1
+            return
+
         cmd = [
-            "uv",
-            "run",
-            "python",
-            "seed.py",
+            sys.executable,
+            str(seed_py),
             "--customers",
             str(target),
             "--checkpoint-every",
@@ -74,7 +100,7 @@ class IngestJob:
         try:
             proc = subprocess.run(
                 cmd,
-                cwd=str(SEED_DIR),
+                cwd=str(seed_dir),
                 capture_output=True,
                 text=True,
                 check=False,

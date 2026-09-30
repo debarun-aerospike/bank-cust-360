@@ -46,7 +46,8 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: bank-c360-backend
     depends_on:
       aerospike:
@@ -61,6 +62,7 @@ services:
       AEROSPIKE_NAMESPACE: bank
       ADMIN_TOKEN: ${ADMIN_TOKEN:-admin:admin}
       SEEDED_CUSTOMER_MAX: ${SEED_CUSTOMERS:-100}
+      SEED_DIR: /app/ops/seed
     healthcheck:
       test:
         [
