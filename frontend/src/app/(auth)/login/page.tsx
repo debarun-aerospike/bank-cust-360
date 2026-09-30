@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { fetchCustomer360 } from "@/lib/api";
+import { setAdminSession, setCustomerSession } from "@/lib/session";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,6 +16,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     if (mode === "admin") {
+      setAdminSession();
       router.push("/admin");
       return;
     }
@@ -27,7 +28,7 @@ export default function LoginPage() {
     setBusy(true);
     try {
       await fetchCustomer360(id, "Active");
-      sessionStorage.setItem("c360_customer_id", id);
+      setCustomerSession(id);
       router.push("/c360");
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -103,13 +104,6 @@ export default function LoginPage() {
           )}
           {error ? <p className="error">{error}</p> : null}
         </form>
-
-        <p className="login-footnote muted">
-          Demo only ·{" "}
-          <Link href="/admin" className="login-inline-link">
-            skip to Admin
-          </Link>
-        </p>
       </main>
     </div>
   );

@@ -10,6 +10,11 @@ import {
   fetchCustomer360,
   formatMoney,
 } from "@/lib/api";
+import {
+  SESSION_CUSTOMER_ID,
+  clearSession,
+  getSessionRole,
+} from "@/lib/session";
 
 const LINES: Array<ProductLine | "ALL"> = [
   "ALL",
@@ -29,7 +34,11 @@ export default function C360Page() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const id = sessionStorage.getItem("c360_customer_id");
+    if (getSessionRole() !== "customer") {
+      router.replace("/login");
+      return;
+    }
+    const id = sessionStorage.getItem(SESSION_CUSTOMER_ID);
     if (!id) {
       router.replace("/login");
       return;
@@ -52,7 +61,7 @@ export default function C360Page() {
           setError(msg);
           setData(null);
           if (/dormant/i.test(msg) || /cannot use netbanking/i.test(msg)) {
-            sessionStorage.removeItem("c360_customer_id");
+            clearSession();
             router.replace("/login");
           }
         }
@@ -71,10 +80,19 @@ export default function C360Page() {
     return data.accountsByProductLine[tab] ?? [];
   }, [data, tab]);
 
+  const lineCounts = useMemo(() => {
+    if (!data) return [];
+    return (Object.keys(PRODUCT_LINE_LABELS) as ProductLine[]).map((line) => ({
+      line,
+      label: PRODUCT_LINE_LABELS[line],
+      count: data.accountsByProductLine[line]?.length ?? 0,
+    }));
+  }, [data]);
+
   if (!customerId) return null;
 
   return (
-    <main>
+    <main className="c360-page">
       <div className="customer-head">
         <div className="customer-identity">
           {data ? (
@@ -172,6 +190,97 @@ export default function C360Page() {
               </table>
             </div>
           )}
+
+          <section className="home-below" aria-label="Account insights">
+            <div className="home-snapshot">
+              <h2>Your portfolio at a glance</h2>
+              <p className="muted">
+                Linked products in this view · {data.accounts.length} account
+                {data.accounts.length === 1 ? "" : "s"}
+              </p>
+              <ul className="home-line-strip">
+                {lineCounts.map((item) => (
+                  <li key={item.line}>
+                    <span className="home-line-label">{item.label}</span>
+                    <span className="home-line-count">{item.count}</span>
+                    <span
+                      className="home-line-bar"
+                      style={{
+                        width: `${Math.max(8, item.count * 28)}%`,
+                      }}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="home-spotlight">
+              <div className="home-spotlight-copy">
+                <p className="home-kicker">Aerospike Bank</p>
+                <h2>Banking that keeps up with you</h2>
+                <p>
+                  Balances on this screen are assembled in real time from
+                  customer, account, product, and booking data — the same
+                  Customer 360 path powering netbanking demos.
+                </p>
+              </div>
+              <div className="home-spotlight-art" aria-hidden="true">
+                <svg viewBox="0 0 420 240" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#1a2a44" />
+                      <stop offset="100%" stopColor="#0d1b32" />
+                    </linearGradient>
+                  </defs>
+                  <rect width="420" height="240" fill="url(#sky)" />
+                  <circle cx="330" cy="54" r="28" fill="#F8F413" opacity="0.9" />
+                  <g fill="#F2F1ED" opacity="0.88">
+                    <rect x="36" y="120" width="42" height="100" />
+                    <rect x="88" y="88" width="54" height="132" />
+                    <rect x="152" y="108" width="48" height="112" />
+                    <rect x="210" y="72" width="62" height="148" />
+                    <rect x="284" y="100" width="44" height="120" />
+                    <rect x="338" y="128" width="50" height="92" />
+                  </g>
+                  <g fill="#0D1B32" opacity="0.35">
+                    <rect x="96" y="100" width="8" height="8" />
+                    <rect x="112" y="100" width="8" height="8" />
+                    <rect x="96" y="116" width="8" height="8" />
+                    <rect x="112" y="116" width="8" height="8" />
+                    <rect x="224" y="88" width="8" height="8" />
+                    <rect x="240" y="88" width="8" height="8" />
+                    <rect x="224" y="104" width="8" height="8" />
+                    <rect x="240" y="104" width="8" height="8" />
+                  </g>
+                  <rect y="210" width="420" height="30" fill="#F8F413" opacity="0.85" />
+                </svg>
+              </div>
+            </div>
+
+            <div className="home-tips">
+              <article>
+                <h3>Stay secure</h3>
+                <p className="muted">
+                  Never share OTPs or passwords. Sign out when you finish on a
+                  shared device.
+                </p>
+              </article>
+              <article>
+                <h3>Read your balances</h3>
+                <p className="muted">
+                  Savings available balance is ledger minus holds and float.
+                  Loans and cards show outstanding principal plus interest.
+                </p>
+              </article>
+              <article>
+                <h3>Need another view?</h3>
+                <p className="muted">
+                  Use the product-line tabs and account-status filter above to
+                  focus Active, Dormant, or Closed accounts.
+                </p>
+              </article>
+            </div>
+          </section>
         </>
       ) : null}
     </main>

@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   CartesianGrid,
   Legend,
@@ -24,6 +25,7 @@ import {
   startIngest,
 } from "@/lib/api";
 import { INGEST_COUNTRIES } from "@/lib/countries";
+import { getSessionRole } from "@/lib/session";
 
 const WINDOW_OPTIONS = [
   { label: "Last 1 min", seconds: 60 },
@@ -32,6 +34,8 @@ const WINDOW_OPTIONS = [
 ];
 
 export default function AdminPage() {
+  const router = useRouter();
+  const [allowed, setAllowed] = useState(false);
   const [inventory, setInventory] = useState<Inventory | null>(null);
   const [load, setLoad] = useState<LoadStatus | null>(null);
   const [ingest, setIngest] = useState<IngestStatus | null>(null);
@@ -43,6 +47,14 @@ export default function AdminPage() {
   const [series, setSeries] = useState<MetricsPoint[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (getSessionRole() !== "admin") {
+      router.replace("/login");
+      return;
+    }
+    setAllowed(true);
+  }, [router]);
 
   const refresh = useCallback(async () => {
     const [inv, ld, ig] = await Promise.all([
@@ -58,10 +70,12 @@ export default function AdminPage() {
   }, [readTps, writeTps]);
 
   useEffect(() => {
+    if (!allowed) return;
     refresh().catch((e) => setError(e instanceof Error ? e.message : String(e)));
-  }, [refresh]);
+  }, [refresh, allowed]);
 
   useEffect(() => {
+    if (!allowed) return;
     let ws: WebSocket | null = null;
     let closed = false;
     let retry: ReturnType<typeof setTimeout> | null = null;
@@ -90,10 +104,10 @@ export default function AdminPage() {
       if (retry) clearTimeout(retry);
       ws?.close();
     };
-  }, [windowSec]);
+  }, [windowSec, allowed]);
 
   useEffect(() => {
-    if (ingest?.state !== "running") return;
+    if (!allowed || ingest?.state !== "running") return;
     const t = setInterval(() => {
       fetchIngest()
         .then(setIngest)
@@ -103,7 +117,7 @@ export default function AdminPage() {
         .catch(() => undefined);
     }, 1500);
     return () => clearInterval(t);
-  }, [ingest?.state]);
+  }, [ingest?.state, allowed]);
 
   const chartData = useMemo(
     () =>
@@ -157,6 +171,8 @@ export default function AdminPage() {
       setBusy(false);
     }
   }
+
+  if (!allowed) return null;
 
   return (
     <main>
