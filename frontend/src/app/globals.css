@@ -716,3 +716,100 @@ table.accounts th {
   max-width: 32ch;
 }
 
+/* —— Admin data-model ER diagram —— */
+.er-panel {
+  margin-bottom: 1.25rem;
+}
+
+.er-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.er-header h2 {
+  margin-bottom: 0.35rem;
+}
+
+.er-sub {
+  margin: 0;
+  max-width: 52ch;
+}
+
+.er-sub code {
+  font-size: 0.9em;
+  background: var(--as-sand);
+  padding: 0.1rem 0.35rem;
+}
+
+.er-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.1rem;
+  font-size: 0.85rem;
+  color: var(--as-muted);
+  font-weight: 600;
+}
+
+.er-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.er-swatch {
+  width: 1rem;
+  height: 0.7rem;
+  border: 1px solid var(--as-ink);
+  flex-shrink: 0;
+}
+
+.er-swatch.core {
+  background: var(--as-yellow);
+}
+
+.er-swatch.aux {
+  background: var(--as-sand);
+}
+
+.er-swatch.dashed {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--as-muted);
+}
+
+.er-canvas {
+  overflow-x: auto;
+  border: 1px solid var(--as-line);
+  background:
+    linear-gradient(180deg, #fafaf8 0%, var(--as-white) 40%),
+    var(--as-white);
+}
+
+.er-svg {
+  display: block;
+  min-width: 720px;
+}
+
+.er-readpath {
+  margin: 1rem 0 0;
+  padding-left: 1.15rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.er-readpath li + li {
+  margin-top: 0.35rem;
+}
+
+.er-readpath strong {
+  color: var(--as-ink);
+  font-weight: 700;
+}
+

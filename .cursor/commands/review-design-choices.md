@@ -1,0 +1,1 @@
+Please review the schema summary in the docs folder and write a file called design-choices.md in the planning folder.
