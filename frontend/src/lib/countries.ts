@@ -14,6 +14,15 @@ export const INGEST_COUNTRIES = [
   "Italy",
   "Netherlands",
   "Singapore",
+  "Indonesia",
+  "Philippines",
+  "Malaysia",
+  "Thailand",
+  "Vietnam",
+  "Cambodia",
+  "Myanmar",
+  "Laos",
+  "Brunei",
   "United Arab Emirates",
 ] as const;
 

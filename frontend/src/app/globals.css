@@ -716,6 +716,61 @@ table.accounts th {
   max-width: 32ch;
 }
 
+/* —— Admin collapsible panels —— */
+.panel-collapse {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.panel-collapse-summary {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1rem;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--as-ink);
+}
+
+.panel-collapse-summary::-webkit-details-marker {
+  display: none;
+}
+
+.panel-collapse-summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 1rem;
+  color: var(--as-muted);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.95rem;
+  transform: translateY(-1px);
+}
+
+.panel-collapse[open] > .panel-collapse-summary::before {
+  content: "▾";
+}
+
+.panel-collapse-title {
+  flex: 0 0 auto;
+}
+
+.panel-collapse-meta {
+  flex: 1 1 12rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.panel-collapse[open] > .panel-collapse-summary {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--as-line);
+}
+
 /* —— Admin data-model ER diagram —— */
 .er-panel {
   margin-bottom: 1.25rem;

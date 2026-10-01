@@ -182,7 +182,7 @@ export default function AdminPage() {
     <main>
       <div className="banner">
         {tab === "load"
-          ? "Admin load lab · app-side latency & throughput"
+          ? "Admin load generator · app-side latency & throughput"
           : "Admin · Aerospike schema (namespace bank)"}
       </div>
 
@@ -196,7 +196,7 @@ export default function AdminPage() {
           data-active={tab === "load" ? "true" : "false"}
           onClick={() => setTab("load")}
         >
-          Load lab
+          Load generator
         </button>
         <button
           type="button"
@@ -243,6 +243,53 @@ export default function AdminPage() {
               </div>
             </div>
           </section>
+
+          <details className="panel panel-collapse" style={{ marginBottom: "1.25rem" }}>
+            <summary className="panel-collapse-summary">
+              <span className="panel-collapse-title">Ingestion simulation</span>
+              <span className="muted panel-collapse-meta">
+                {ingest?.state === "running"
+                  ? `Running${ingest.message ? ` — ${ingest.message}` : ""}`
+                  : "Collapsed · expand to ingest new data"}
+              </span>
+            </summary>
+            <form className="controls-row" onSubmit={onIngest}>
+              <label className="control-field grow" htmlFor="ingest">
+                <span className="label">Target customer count</span>
+                <input
+                  id="ingest"
+                  className="field field-flush"
+                  type="number"
+                  min={1}
+                  max={9999999}
+                  value={ingestCount}
+                  onChange={(e) => setIngestCount(Number(e.target.value))}
+                />
+              </label>
+              <label className="control-field grow" htmlFor="ingest-country">
+                <span className="label">Country (names)</span>
+                <select
+                  id="ingest-country"
+                  className="field field-flush control-select"
+                  value={ingestCountry}
+                  onChange={(e) => setIngestCountry(e.target.value)}
+                >
+                  {INGEST_COUNTRIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button className="btn" disabled={busy || ingest?.state === "running"} type="submit">
+                Run ingest
+              </button>
+            </form>
+            <p className="muted" style={{ margin: "0.75rem 0 0" }}>
+              Status: {ingest?.state ?? "idle"}
+              {ingest?.message ? ` — ${ingest.message}` : ""}
+            </p>
+          </details>
 
           <section className="panel" style={{ marginBottom: "1.25rem" }}>
             <h2>Load control</h2>
@@ -315,46 +362,6 @@ export default function AdminPage() {
             <p className="muted" style={{ margin: 0 }}>
               Achieved R/W: {load?.achievedReadTps ?? 0} / {load?.achievedWriteTps ?? 0} ·
               error {(load?.errorRate ?? 0) * 100}% · seeded max {load?.seededCustomerMax ?? "—"}
-            </p>
-          </section>
-
-          <section className="panel" style={{ marginBottom: "1.25rem" }}>
-            <h2>Ingestion simulation</h2>
-            <form className="controls-row" onSubmit={onIngest}>
-              <label className="control-field grow" htmlFor="ingest">
-                <span className="label">Target customer count</span>
-                <input
-                  id="ingest"
-                  className="field field-flush"
-                  type="number"
-                  min={1}
-                  max={9999999}
-                  value={ingestCount}
-                  onChange={(e) => setIngestCount(Number(e.target.value))}
-                />
-              </label>
-              <label className="control-field grow" htmlFor="ingest-country">
-                <span className="label">Country (names)</span>
-                <select
-                  id="ingest-country"
-                  className="field field-flush control-select"
-                  value={ingestCountry}
-                  onChange={(e) => setIngestCountry(e.target.value)}
-                >
-                  {INGEST_COUNTRIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <button className="btn" disabled={busy || ingest?.state === "running"} type="submit">
-                Run ingest
-              </button>
-            </form>
-            <p className="muted" style={{ margin: 0 }}>
-              Status: {ingest?.state ?? "idle"}
-              {ingest?.message ? ` — ${ingest.message}` : ""}
             </p>
           </section>
 
